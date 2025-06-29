@@ -98,15 +98,15 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
   const selectedCategory = categories.find(c => c.id === formData.category_id);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 safe-area-inset-top safe-area-inset-bottom">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {budget ? 'Editează bugetul' : 'Creează buget nou'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="touch-target text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <X size={20} />
           </button>
@@ -125,7 +125,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
                 required
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none"
+                className="input-mobile pl-10 appearance-none"
               >
                 <option value="">Selectează categoria</option>
                 {categories.map((category) => (
@@ -152,7 +152,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
                 required
                 value={formData.allocated_amount}
                 onChange={(e) => setFormData({ ...formData, allocated_amount: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-mobile pl-10"
                 placeholder="0.00"
               />
             </div>
@@ -171,14 +171,14 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
                   key={period.value}
                   type="button"
                   onClick={() => handlePeriodTypeChange(period.value as any)}
-                  className={`p-3 rounded-xl border-2 transition-colors ${
+                  className={`p-3 rounded-xl border-2 transition-colors touch-target ${
                     formData.period_type === period.value
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="text-center">
-                    <div className="font-medium">{period.label}</div>
+                    <div className="font-medium text-sm">{period.label}</div>
                   </div>
                 </button>
               ))}
@@ -186,7 +186,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
           </div>
 
           {/* Date Range */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-2">
                 Data început
@@ -199,7 +199,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
                   required
                   value={formData.period_start}
                   onChange={(e) => setFormData({ ...formData, period_start: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="input-mobile pl-10"
                 />
               </div>
             </div>
@@ -215,7 +215,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
                   required
                   value={formData.period_end}
                   onChange={(e) => setFormData({ ...formData, period_end: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="input-mobile pl-10"
                 />
               </div>
             </div>
@@ -246,17 +246,17 @@ const BudgetModal: React.FC<BudgetModalProps> = ({
           )}
 
           {/* Submit Buttons */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              className="btn-secondary flex-1"
             >
               Anulează
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+              className="btn-primary flex-1"
             >
               {budget ? 'Actualizează' : 'Creează'}
             </button>

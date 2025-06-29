@@ -57,15 +57,15 @@ const AccountModal: React.FC<AccountModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 safe-area-inset-top safe-area-inset-bottom">
+      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {account ? 'Editează contul' : 'Adaugă cont nou'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="touch-target text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <X size={20} />
           </button>
@@ -85,7 +85,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-mobile pl-10"
                 placeholder="Ex: Cont Principal BRD"
               />
             </div>
@@ -100,7 +100,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
                   key={type.value}
                   type="button"
                   onClick={() => setFormData({ ...formData, type: type.value as any })}
-                  className={`p-3 rounded-xl border-2 transition-colors ${
+                  className={`p-3 rounded-xl border-2 transition-colors touch-target ${
                     formData.type === type.value
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                       : 'border-gray-200 hover:border-gray-300'
@@ -128,7 +128,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
                 step="0.01"
                 value={formData.balance}
                 onChange={(e) => setFormData({ ...formData, balance: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-mobile pl-10"
                 placeholder="0.00"
               />
             </div>
@@ -143,7 +143,7 @@ const AccountModal: React.FC<AccountModalProps> = ({
               id="currency"
               value={formData.currency}
               onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none"
+              className="input-mobile appearance-none"
             >
               <option value="RON">Leu românesc (RON)</option>
               <option value="EUR">Euro (EUR)</option>
@@ -179,17 +179,17 @@ const AccountModal: React.FC<AccountModalProps> = ({
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              className="btn-secondary flex-1"
             >
               Anulează
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+              className="btn-primary flex-1"
             >
               {account ? 'Actualizează' : 'Adaugă'}
             </button>

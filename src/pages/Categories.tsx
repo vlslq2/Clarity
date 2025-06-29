@@ -66,72 +66,68 @@ const Categories: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Mobile-optimized header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Categorii</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Categorii</h1>
           <p className="text-gray-600 mt-1">Gestionează categoriile și bugetele tale</p>
         </div>
         <button 
           onClick={handleAddCategory}
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center"
+          className="btn-primary flex items-center justify-center"
         >
           <Plus size={20} className="mr-2" />
-          Adaugă categorie
+          <span className="hidden sm:inline">Adaugă categorie</span>
+          <span className="sm:hidden">Adaugă</span>
         </button>
       </div>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total cheltuit</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{totalSpent.toLocaleString()} RON</p>
-            <p className="text-sm text-gray-500 mt-1">din {totalBudget.toLocaleString()} RON bugetat</p>
-          </div>
+      {/* Mobile-optimized Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <Card className="text-center p-4">
+          <p className="text-sm text-gray-600">Total cheltuit</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">{totalSpent.toLocaleString()} RON</p>
+          <p className="text-sm text-gray-500 mt-1">din {totalBudget.toLocaleString()} RON bugetat</p>
         </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Utilizare medie</p>
-            <p className="text-2xl font-bold text-indigo-600 mt-1">
-              {totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0}%
-            </p>
-            <p className="text-sm text-gray-500 mt-1">din bugetul total</p>
-          </div>
+        <Card className="text-center p-4">
+          <p className="text-sm text-gray-600">Utilizare medie</p>
+          <p className="text-xl sm:text-2xl font-bold text-indigo-600 mt-1">
+            {totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0}%
+          </p>
+          <p className="text-sm text-gray-500 mt-1">din bugetul total</p>
         </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Categorii active</p>
-            <p className="text-2xl font-bold text-green-600 mt-1">{categories.length}</p>
-            <p className="text-sm text-gray-500 mt-1">categorii create</p>
-          </div>
+        <Card className="text-center p-4">
+          <p className="text-sm text-gray-600">Categorii active</p>
+          <p className="text-xl sm:text-2xl font-bold text-green-600 mt-1">{categories.length}</p>
+          <p className="text-sm text-gray-500 mt-1">categorii create</p>
         </Card>
       </div>
 
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Mobile-optimized Categories Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {categoriesWithSpending.length > 0 ? (
           categoriesWithSpending.map((category) => (
-            <Card key={category.id} hover>
+            <Card key={category.id} hover className="p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="text-2xl mr-3">{category.icon}</div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{category.name}</h3>
+                <div className="flex items-center flex-1 min-w-0">
+                  <div className="text-2xl mr-3 flex-shrink-0">{category.icon}</div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-gray-900 truncate">{category.name}</h3>
                     <p className="text-sm text-gray-600">{category.transactionCount} tranzacții</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 flex-shrink-0">
                   <button 
                     onClick={() => handleEditCategory(category)}
-                    className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="touch-target text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                   >
                     <Edit2 size={16} />
                   </button>
                   {!category.is_default && (
                     <button 
                       onClick={() => handleDeleteCategory(category.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="touch-target text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -183,13 +179,13 @@ const Categories: React.FC = () => {
             </Card>
           ))
         ) : (
-          <div className="col-span-full text-center py-12">
+          <div className="col-span-full text-center py-12 px-4">
             <div className="text-6xl mb-4">📦</div>
             <p className="text-gray-500 text-lg">Nu ai încă categorii</p>
             <p className="text-sm text-gray-400 mt-1">Adaugă prima ta categorie pentru a organiza cheltuielile</p>
             <button 
               onClick={handleAddCategory}
-              className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+              className="mt-4 btn-primary"
             >
               Adaugă prima categorie
             </button>

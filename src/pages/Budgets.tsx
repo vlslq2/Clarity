@@ -58,17 +58,18 @@ const Budgets: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Mobile-optimized header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Bugete</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Bugete</h1>
           <p className="text-gray-600 mt-1">Urmărește și gestionează bugetele tale pe categorii</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="input-mobile"
           >
             <option value="week">Săptămâna aceasta</option>
             <option value="month">Luna aceasta</option>
@@ -76,55 +77,48 @@ const Budgets: React.FC = () => {
           </select>
           <button 
             onClick={handleAddBudget}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center"
+            className="btn-primary flex items-center justify-center"
           >
             <Plus size={20} className="mr-2" />
-            Buget nou
+            <span className="hidden sm:inline">Buget nou</span>
+            <span className="sm:hidden">Adaugă</span>
           </button>
         </div>
       </div>
 
-      {/* Budget Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total bugetat</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{totalAllocated.toLocaleString()} RON</p>
-            <p className="text-sm text-gray-500 mt-1">pentru această lună</p>
-          </div>
+      {/* Mobile-optimized Budget Overview */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        <Card className="text-center p-4">
+          <p className="text-xs sm:text-sm text-gray-600">Total bugetat</p>
+          <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">{totalAllocated.toLocaleString()} RON</p>
+          <p className="text-xs text-gray-500 mt-1">pentru această lună</p>
         </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Total cheltuit</p>
-            <p className="text-2xl font-bold text-indigo-600 mt-1">{totalSpent.toLocaleString()} RON</p>
-            <p className="text-sm text-gray-500 mt-1">
-              {totalAllocated > 0 ? Math.round((totalSpent / totalAllocated) * 100) : 0}% din buget
-            </p>
-          </div>
+        <Card className="text-center p-4">
+          <p className="text-xs sm:text-sm text-gray-600">Total cheltuit</p>
+          <p className="text-lg sm:text-2xl font-bold text-indigo-600 mt-1">{totalSpent.toLocaleString()} RON</p>
+          <p className="text-xs text-gray-500 mt-1">
+            {totalAllocated > 0 ? Math.round((totalSpent / totalAllocated) * 100) : 0}% din buget
+          </p>
         </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Rămâne</p>
-            <p className={`text-2xl font-bold mt-1 ${getStatusColor(totalSpent, totalAllocated)}`}>
-              {remainingBudget.toLocaleString()} RON
-            </p>
-            <p className="text-sm text-gray-500 mt-1">până la sfârșitul lunii</p>
-          </div>
+        <Card className="text-center p-4">
+          <p className="text-xs sm:text-sm text-gray-600">Rămâne</p>
+          <p className={`text-lg sm:text-2xl font-bold mt-1 ${getStatusColor(totalSpent, totalAllocated)}`}>
+            {remainingBudget.toLocaleString()} RON
+          </p>
+          <p className="text-xs text-gray-500 mt-1">până la sfârșitul lunii</p>
         </Card>
-        <Card>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Bugete active</p>
-            <p className="text-2xl font-bold text-purple-600 mt-1">{budgetSummaries.length}</p>
-            <p className="text-sm text-gray-500 mt-1">categorii cu bugete</p>
-          </div>
+        <Card className="text-center p-4">
+          <p className="text-xs sm:text-sm text-gray-600">Bugete active</p>
+          <p className="text-lg sm:text-2xl font-bold text-purple-600 mt-1">{budgetSummaries.length}</p>
+          <p className="text-xs text-gray-500 mt-1">categorii cu bugete</p>
         </Card>
       </div>
 
       {/* Budget Progress */}
       {totalAllocated > 0 && (
-        <Card>
+        <Card className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Progres general</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Progres general</h2>
             <div className="text-sm text-gray-600">
               {Math.round((totalSpent / totalAllocated) * 100)}% utilizat
             </div>
@@ -144,20 +138,20 @@ const Budgets: React.FC = () => {
         </Card>
       )}
 
-      {/* Individual Budgets */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Individual Budgets - Mobile optimized */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {budgetSummaries.length > 0 ? (
           budgetSummaries.map((budget) => (
-            <Card key={budget.id} hover>
+            <Card key={budget.id} hover className="p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="text-2xl mr-3">{budget.category_icon}</div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{budget.category_name}</h3>
+                <div className="flex items-center flex-1 min-w-0">
+                  <div className="text-2xl mr-3 flex-shrink-0">{budget.category_icon}</div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-gray-900 truncate">{budget.category_name}</h3>
                     <p className="text-sm text-gray-600">{budget.transaction_count} tranzacții</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 flex-shrink-0">
                   <div className={`flex items-center text-xs ${
                     budget.utilization_percentage > 100 ? 'text-red-600' : 
                     budget.utilization_percentage > 75 ? 'text-yellow-600' : 'text-green-600'
@@ -170,13 +164,13 @@ const Budgets: React.FC = () => {
                   </div>
                   <button 
                     onClick={() => handleEditBudget(budget)}
-                    className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                    className="touch-target text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                   >
                     <Edit2 size={14} />
                   </button>
                   <button 
                     onClick={() => handleDeleteBudget(budget.id)}
-                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                    className="touch-target text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -186,7 +180,7 @@ const Budgets: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Progres</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-gray-900 text-sm">
                     {budget.spent_amount.toLocaleString()} / {budget.allocated_amount.toLocaleString()} RON
                   </span>
                 </div>
@@ -232,13 +226,13 @@ const Budgets: React.FC = () => {
             </Card>
           ))
         ) : (
-          <div className="col-span-full text-center py-12">
+          <div className="col-span-full text-center py-12 px-4">
             <Target size={48} className="mx-auto text-gray-300 mb-4" />
             <p className="text-gray-500 text-lg">Nu ai încă bugete configurate</p>
             <p className="text-sm text-gray-400 mt-1">Creează primul tău buget pentru a urmări cheltuielile pe categorii</p>
             <button 
               onClick={handleAddBudget}
-              className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+              className="mt-4 btn-primary"
             >
               Creează primul buget
             </button>

@@ -83,15 +83,15 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 safe-area-inset-top safe-area-inset-bottom">
       <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {payment ? 'Editează plata recurentă' : 'Adaugă plată recurentă'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="touch-target text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <X size={20} />
           </button>
@@ -109,7 +109,7 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="input-mobile"
               placeholder="Ex: Netflix, Spotify, Chirie"
             />
           </div>
@@ -129,7 +129,7 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
                 required
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-mobile pl-10"
                 placeholder="0.00"
               />
             </div>
@@ -147,7 +147,7 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
                 required
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none"
+                className="input-mobile pl-10 appearance-none"
               >
                 <option value="">Selectează categoria</option>
                 {categories.map((category) => (
@@ -168,7 +168,7 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
               id="account"
               value={formData.account_id}
               onChange={(e) => setFormData({ ...formData, account_id: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent appearance-none"
+              className="input-mobile appearance-none"
             >
               <option value="">Selectează contul</option>
               {accounts.map((account) => (
@@ -193,13 +193,13 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
                   key={freq.value}
                   type="button"
                   onClick={() => setFormData({ ...formData, frequency: freq.value as any })}
-                  className={`p-3 rounded-xl border-2 transition-colors ${
+                  className={`p-3 rounded-xl border-2 transition-colors touch-target ${
                     formData.frequency === freq.value
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  {freq.label}
+                  <div className="text-sm font-medium">{freq.label}</div>
                 </button>
               ))}
             </div>
@@ -218,7 +218,7 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
                 required
                 value={formData.next_payment_date}
                 onChange={(e) => setFormData({ ...formData, next_payment_date: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="input-mobile pl-10"
               />
             </div>
           </div>
@@ -228,13 +228,13 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Selectează iconița
             </label>
-            <div className="grid grid-cols-10 gap-2">
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
               {predefinedIcons.map((icon) => (
                 <button
                   key={icon}
                   type="button"
                   onClick={() => setFormData({ ...formData, icon })}
-                  className={`p-2 text-xl rounded-lg border-2 transition-colors ${
+                  className={`touch-target text-xl rounded-lg border-2 transition-colors ${
                     formData.icon === icon
                       ? 'border-indigo-500 bg-indigo-50'
                       : 'border-gray-200 hover:border-gray-300'
@@ -247,17 +247,17 @@ const RecurringPaymentModal: React.FC<RecurringPaymentModalProps> = ({
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+              className="btn-secondary flex-1"
             >
               Anulează
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+              className="btn-primary flex-1"
             >
               {payment ? 'Actualizează' : 'Adaugă'}
             </button>
