@@ -24,8 +24,12 @@ const Categories: React.FC = () => {
     const spent = categoryTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
     const transactionCount = categoryTransactions.length;
     
+    // Fix icon display - if it's not an emoji, use a default
+    const displayIcon = category.icon && /\p{Emoji}/u.test(category.icon) ? category.icon : '📦';
+    
     return {
       ...category,
+      icon: displayIcon,
       spent,
       transactionCount,
       budget: category.budget_limit || 0,
