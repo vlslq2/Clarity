@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2.5 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-white/90 transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg border-2 border-gray-200/60 hover:border-gray-300/80"
+          className="touch-target rounded-xl text-gray-600 hover:text-gray-900 hover:bg-white/90 transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg border-2 border-gray-200/60 hover:border-gray-300/80"
         >
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -98,7 +98,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                       setSidebarOpen(false);
                     }}
                     className={`
-                      w-full flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200 group border-2
+                      w-full flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200 group border-2 touch-target
                       ${isActive
                         ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-[1.02] border-indigo-500/30'
                         : 'text-gray-700 hover:text-gray-900 hover:bg-white/80 hover:shadow-md active:scale-[0.98] border-transparent hover:border-gray-200/60'
@@ -134,7 +134,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
               </div>
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/80 rounded-xl transition-all duration-200 active:scale-[0.98] hover:shadow-md group border-2 border-transparent hover:border-gray-200/60"
+                className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/80 rounded-xl transition-all duration-200 active:scale-[0.98] hover:shadow-md group border-2 border-transparent hover:border-gray-200/60 touch-target"
               >
                 <LogOut size={16} className="mr-3 group-hover:scale-110 transition-transform duration-200" />
                 Deconectează-te
@@ -145,7 +145,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
 
         {/* Main Content */}
         <div className="flex-1 lg:ml-0">
-          <main className="px-4 py-6 lg:px-8 max-w-7xl mx-auto">
+          <main className="px-4 py-6 lg:px-8 max-w-7xl mx-auto safe-area-inset-bottom">
             {children}
           </main>
         </div>

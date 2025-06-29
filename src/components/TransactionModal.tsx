@@ -96,15 +96,15 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 modal-backdrop flex items-center justify-center z-50 p-4 safe-area-inset-top safe-area-inset-bottom">
       <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto border-2 border-gray-300/80 shadow-2xl shadow-gray-900/20" glass>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {transaction ? 'Editează tranzacția' : 'Adaugă tranzacție nouă'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200 active:scale-95 border border-gray-200/60 hover:border-gray-300/80"
+            className="touch-target text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200 active:scale-95 border border-gray-200/60 hover:border-gray-300/80"
           >
             <X size={20} />
           </button>
@@ -118,29 +118,29 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, type: 'expense' })}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 shadow-md ${
+                className={`p-4 rounded-xl border-2 transition-all duration-200 shadow-md touch-target ${
                   formData.type === 'expense'
                     ? 'border-red-500 bg-red-50 text-red-700 scale-[1.02] shadow-red-500/20'
-                    : 'border-gray-300/80 hover:border-gray-400/90 hover:bg-gray-50 shadow-gray-900/10'
+                    : 'border-gray-300/80 hover:border-gray-400/90 hover:bg-gray-50 shadow-gray-900/10 active:scale-[0.98]'
                 }`}
               >
                 <div className="text-center">
                   <div className="text-2xl mb-2">💸</div>
-                  <div className="font-medium">Cheltuială</div>
+                  <div className="font-medium text-sm sm:text-base">Cheltuială</div>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, type: 'income' })}
-                className={`p-4 rounded-xl border-2 transition-all duration-200 shadow-md ${
+                className={`p-4 rounded-xl border-2 transition-all duration-200 shadow-md touch-target ${
                   formData.type === 'income'
                     ? 'border-green-500 bg-green-50 text-green-700 scale-[1.02] shadow-green-500/20'
-                    : 'border-gray-300/80 hover:border-gray-400/90 hover:bg-gray-50 shadow-gray-900/10'
+                    : 'border-gray-300/80 hover:border-gray-400/90 hover:bg-gray-50 shadow-gray-900/10 active:scale-[0.98]'
                 }`}
               >
                 <div className="text-center">
                   <div className="text-2xl mb-2">💰</div>
-                  <div className="font-medium">Venit</div>
+                  <div className="font-medium text-sm sm:text-base">Venit</div>
                 </div>
               </button>
             </div>
@@ -159,7 +159,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300/80 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm hover:border-gray-400/90 transition-all duration-200"
+                className="input-mobile pl-10"
                 placeholder={formData.type === 'expense' ? 'Ex: Cumpărături Kaufland' : 'Ex: Salariu'}
                 list="description-suggestions"
                 autoComplete="off"
@@ -190,7 +190,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                 required
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300/80 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm hover:border-gray-400/90 transition-all duration-200"
+                className="input-mobile pl-10"
                 placeholder="0.00"
                 autoComplete="off"
               />
@@ -209,7 +209,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                 required
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300/80 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white shadow-sm hover:border-gray-400/90 transition-all duration-200"
+                className="input-mobile pl-10 appearance-none"
               >
                 <option value="">Selectează categoria</option>
                 {categories.map((category) => (
@@ -234,24 +234,24 @@ const TransactionModal: React.FC<TransactionModalProps> = ({
                 required
                 value={formData.transaction_date}
                 onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300/80 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm hover:border-gray-400/90 transition-all duration-200"
+                className="input-mobile pl-10"
                 autoComplete="off"
               />
             </div>
           </div>
 
           {/* Enhanced Submit Buttons */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 btn-secondary"
+              className="btn-secondary flex-1"
             >
               Anulează
             </button>
             <button
               type="submit"
-              className="flex-1 btn-primary"
+              className="btn-primary flex-1"
             >
               {transaction ? 'Actualizează' : 'Adaugă'}
             </button>
