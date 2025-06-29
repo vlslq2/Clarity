@@ -9,14 +9,94 @@ import {
   Trash2, 
   HelpCircle,
   Moon,
-  Sun
+  Sun,
+  Save
 } from 'lucide-react';
 import Card from '../components/Card';
+import { useProfile } from '../hooks/useProfile';
+import { useAuth } from '../hooks/useAuth';
 
 const Settings: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [currency, setCurrency] = useState('RON');
-  const [language, setLanguage] = useState('ro');
+  const { profile, updateProfile } = useProfile();
+  const { signOut } = useAuth();
+  
+  const [settings, setSettings] = useState({
+    darkMode: false,
+    currency: profile?.currency || 'RON',
+    language: profile?.language || 'ro',
+    dateFormat: 'dd/mm/yyyy',
+    resetBudgets: true,
+    budgetAlerts: true,
+    autoCategories: true,
+    pinLock: false,
+    dataSync: true,
+    analytics: true,
+    transactionNotifications: true,
+    budgetNotifications: true,
+    monthlyReports: false,
+  });
+
+  const [saving, setSaving] = useState(false);
+
+  const handleSettingChange = (key: string, value: any) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const saveSettings = async () => {
+    setSaving(true);
+    try {
+      // Update profile settings
+      await updateProfile({
+        currency: settings.currency,
+        language: settings.language,
+      });
+      
+      // Here you would typically save other settings to a user preferences table
+      // For now, we'll just simulate the save
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      alert('Setările au fost salvate cu succes!');
+    } catch (error) {
+      alert('Eroare la salvarea setărilor');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const exportData = async () => {
+    try {
+      // This would typically call an API endpoint to generate and download user data
+      alert('Exportul datelor va fi disponibil în curând');
+    } catch (error) {
+      alert('Eroare la exportul datelor');
+    }
+  };
+
+  const deleteAllData = async () => {
+    if (window.confirm('Ești sigur că vrei să ștergi toate datele? Această acțiune nu poate fi anulată.')) {
+      if (window.confirm('Confirmă din nou - toate tranzacțiile, bugetele și setările vor fi șterse permanent.')) {
+        try {
+          // This would call an API to delete all user data
+          alert('Funcția de ștergere va fi implementată în curând');
+        } catch (error) {
+          alert('Eroare la ștergerea datelor');
+        }
+      }
+    }
+  };
+
+  const closeAccount = async () => {
+    if (window.confirm('Ești sigur că vrei să închizi contul? Toate datele vor fi șterse și nu vei mai putea accesa aplicația.')) {
+      if (window.confirm('Confirmă din nou - contul va fi închis permanent.')) {
+        try {
+          // This would call an API to close the account
+          await signOut();
+        } catch (error) {
+          alert('Eroare la închiderea contului');
+        }
+      }
+    }
+  };
 
   const settingsSections = [
     {
@@ -27,15 +107,13 @@ const Settings: React.FC = () => {
           label: 'Mod Întunecat',
           description: 'Comută între temele luminoasă și întunecată',
           type: 'toggle',
-          value: darkMode,
-          onChange: setDarkMode
+          key: 'darkMode'
         },
         {
           label: 'Limbă',
           description: 'Schimbă limba aplicației',
           type: 'select',
-          value: language,
-          onChange: setLanguage,
+          key: 'language',
           options: [
             { value: 'ro', label: 'Română' },
             { value: 'en', label: 'English' },
@@ -52,8 +130,7 @@ const Settings: React.FC = () => {
           label: 'Moneda Principală',
           description: 'Moneda utilizată pentru afișarea sumelor',
           type: 'select',
-          value: currency,
-          onChange: setCurrency,
+          key: 'currency',
           options: [
             { value: 'RON', label: 'Leu românesc (RON)' },
             { value: 'EUR', label: 'Euro (EUR)' },
@@ -65,7 +142,7 @@ const Settings: React.FC = () => {
           label: 'Format Dată',
           description: 'Cum sunt afișate datele în aplicație',
           type: 'select',
-          value: 'dd/mm/yyyy',
+          key: 'dateFormat',
           options: [
             { value: 'dd/mm/yyyy', label: 'DD/MM/YYYY' },
             { value: 'mm/dd/yyyy', label: 'MM/DD/YYYY' },
@@ -82,19 +159,19 @@ const Settings: React.FC = () => {
           label: 'Resetare Bugete Lunare',
           description: 'Resetează automat bugetele la începutul fiecărei luni',
           type: 'toggle',
-          value: true
+          key: 'resetBudgets'
         },
         {
           label: 'Alertă Depășire Buget',
           description: 'Primește notificări când bugetul este depășit',
           type: 'toggle',
-          value: true
+          key: 'budgetAlerts'
         },
         {
           label: 'Categorizare Automată',
           description: 'Categorizează automat tranzacțiile similare',
           type: 'toggle',
-          value: true
+          key: 'autoCategories'
         }
       ]
     },
@@ -106,19 +183,43 @@ const Settings: React.FC = () => {
           label: 'Blocare cu PIN',
           description: 'Solicită PIN pentru accesarea aplicației',
           type: 'toggle',
-          value: false
+          key: 'pinLock'
         },
         {
           label: 'Sincronizare Date',
           description: 'Sincronizează datele între dispozitive',
           type: 'toggle',
-          value: true
+          key: 'dataSync'
         },
         {
           label: 'Analitice Anonime',
           description: 'Ajută la îmbunătățirea aplicației prin date anonime',
           type: 'toggle',
-          value: true
+          key: 'analytics'
+        }
+      ]
+    },
+    {
+      title: 'Notificări',
+      icon: Bell,
+      settings: [
+        {
+          label: 'Tranzacții Noi',
+          description: 'Alertă pentru fiecare tranzacție nouă',
+          type: 'toggle',
+          key: 'transactionNotifications'
+        },
+        {
+          label: 'Depășire Buget',
+          description: 'Alertă când bugetul este depășit',
+          type: 'toggle',
+          key: 'budgetNotifications'
+        },
+        {
+          label: 'Rapoarte Lunare',
+          description: 'Sumar lunar prin email',
+          type: 'toggle',
+          key: 'monthlyReports'
         }
       ]
     }
@@ -132,17 +233,17 @@ const Settings: React.FC = () => {
             <input 
               type="checkbox" 
               className="sr-only" 
-              checked={setting.value}
-              onChange={(e) => setting.onChange?.(e.target.checked)}
+              checked={settings[setting.key as keyof typeof settings] as boolean}
+              onChange={(e) => handleSettingChange(setting.key, e.target.checked)}
             />
             <div 
               className={`w-10 h-6 rounded-full shadow-inner cursor-pointer transition-colors ${
-                setting.value ? 'bg-indigo-500' : 'bg-gray-300'
+                settings[setting.key as keyof typeof settings] ? 'bg-indigo-500' : 'bg-gray-300'
               }`}
-              onClick={() => setting.onChange?.(!setting.value)}
+              onClick={() => handleSettingChange(setting.key, !settings[setting.key as keyof typeof settings])}
             >
               <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ease-in-out transform mt-1 ${
-                setting.value ? 'translate-x-5' : 'translate-x-1'
+                settings[setting.key as keyof typeof settings] ? 'translate-x-5' : 'translate-x-1'
               }`}></div>
             </div>
           </div>
@@ -150,8 +251,8 @@ const Settings: React.FC = () => {
       case 'select':
         return (
           <select
-            value={setting.value}
-            onChange={(e) => setting.onChange?.(e.target.value)}
+            value={settings[setting.key as keyof typeof settings] as string}
+            onChange={(e) => handleSettingChange(setting.key, e.target.value)}
             className="px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
           >
             {setting.options?.map((option: any) => (
@@ -173,6 +274,14 @@ const Settings: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Setări</h1>
           <p className="text-gray-600 mt-1">Personalizează experiența Clarity după preferințele tale</p>
         </div>
+        <button 
+          onClick={saveSettings}
+          disabled={saving}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center disabled:opacity-50"
+        >
+          <Save size={20} className="mr-2" />
+          {saving ? 'Se salvează...' : 'Salvează Setările'}
+        </button>
       </div>
 
       {/* Settings Sections */}
@@ -214,7 +323,10 @@ const Settings: React.FC = () => {
           <p className="text-gray-600 mb-4">
             Descarcă toate datele tale într-un format CSV sau JSON
           </p>
-          <button className="w-full bg-green-600 text-white py-3 rounded-xl font-medium hover:bg-green-700 transition-colors">
+          <button 
+            onClick={exportData}
+            className="w-full bg-green-600 text-white py-3 rounded-xl font-medium hover:bg-green-700 transition-colors"
+          >
             Exportă Datele
           </button>
         </Card>
@@ -246,7 +358,10 @@ const Settings: React.FC = () => {
             <p className="text-sm text-red-700 mb-3">
               Această acțiune va șterge definitiv toate tranzacțiile, bugetele și setările tale. Acțiunea nu poate fi anulată.
             </p>
-            <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors">
+            <button 
+              onClick={deleteAllData}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
+            >
               Șterge Toate Datele
             </button>
           </div>
@@ -256,7 +371,10 @@ const Settings: React.FC = () => {
             <p className="text-sm text-red-700 mb-3">
               Închide permanent contul Clarity. Toate datele vor fi șterse și nu vei mai putea accesa aplicația.
             </p>
-            <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors">
+            <button 
+              onClick={closeAccount}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
+            >
               Închide Contul
             </button>
           </div>

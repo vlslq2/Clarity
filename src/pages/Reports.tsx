@@ -1,55 +1,156 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BarChart3, PieChart, TrendingUp, Download, Calendar, Filter } from 'lucide-react';
 import Card from '../components/Card';
+import { useTransactions } from '../hooks/useTransactions';
+import { useCategories } from '../hooks/useCategories';
+import { useBudgets } from '../hooks/useBudgets';
 
 const Reports: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const chartData = {
-    monthly: [
-      { month: 'Ian', income: 4500, expenses: 3200 },
-      { month: 'Feb', income: 4500, expenses: 2800 },
-      { month: 'Mar', income: 4500, expenses: 3400 },
-      { month: 'Apr', income: 4500, expenses: 2900 },
-      { month: 'Mai', income: 4500, expenses: 3100 },
-      { month: 'Iun', income: 4500, expenses: 3300 },
-    ],
-    categories: [
-      { name: 'Mâncare', amount: 850, color: '#EF4444', percentage: 35 },
-      { name: 'Transport', amount: 420, color: '#3B82F6', percentage: 17 },
-      { name: 'Divertisment', amount: 180, color: '#8B5CF6', percentage: 7 },
-      { name: 'Cumpărături', amount: 650, color: '#F59E0B', percentage: 27 },
-      { name: 'Utilități', amount: 320, color: '#10B981', percentage: 13 },
-    ]
-  };
+  const { transactions } = useTransactions();
+  const { categories } = useCategories();
+  const { budgetSummaries } = useBudgets();
+
+  // Calculate data based on selected period
+  const reportData = useMemo(() => {
+    const now = new Date();
+    let startDate: Date;
+    let endDate = now;
+
+    switch (selectedPeriod) {
+      case 'week':
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case 'quarter':
+        startDate = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+        break;
+      case 'year':
+        startDate = new Date(now.getFullYear(), 0, 1);
+        break;
+      default: // month
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+
+    const filteredTransactions = transactions.filter(t => {
+      const transactionDate = new Date(t.transaction_date);
+      const inPeriod = transactionDate >= startDate && transactionDate <= endDate;
+      const inCategory = selectedCategory === 'all' || t.category_id === selectedCategory;
+      return inPeriod && inCategory;
+    });
+
+    const totalIncome = filteredTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const totalExpenses = filteredTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+    // Group by category
+    const categoryData = categories.map(category => {
+      const categoryTransactions = filteredTransactions.filter(t => 
+        t.category_id === category.id && t.type === 'expense'
+      );
+      const amount = categoryTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+      const percentage = totalExpenses > 0 ? (amount / totalExpenses) * 100 : 0;
+      
+      return {
+        name: category.name,
+        amount,
+        color: category.color,
+        percentage: Math.round(percentage),
+        transactionCount: categoryTransactions.length
+      };
+    }).filter(c => c.amount > 0).sort((a, b) => b.amount - a.amount);
+
+    // Monthly trend (last 6 months)
+    const monthlyData = [];
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+      const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      
+      const monthTransactions = transactions.filter(t => {
+        const tDate = new Date(t.transaction_date);
+        return tDate >= monthStart && tDate <= monthEnd;
+      });
+
+      const income = monthTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      const expenses = monthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+      monthlyData.push({
+        month: date.toLocaleDateString('ro-RO', { month: 'short' }),
+        income,
+        expenses
+      });
+    }
+
+    return {
+      totalIncome,
+      totalExpenses,
+      netAmount: totalIncome - totalExpenses,
+      transactionCount: filteredTransactions.length,
+      categoryData,
+      monthlyData,
+      avgDailyExpense: totalExpenses / 30,
+      savingsRate: totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0
+    };
+  }, [transactions, categories, selectedPeriod, selectedCategory]);
 
   const insights = [
     {
       title: 'Cea mai mare cheltuială',
-      value: 'Mâncare - 850 RON',
-      change: '+15% față de luna trecută',
-      type: 'warning'
+      value: reportData.categoryData[0] ? `${reportData.categoryData[0].name} - ${reportData.categoryData[0].amount.toLocaleString()} RON` : 'N/A',
+      change: '+15% față de perioada anterioară',
+      type: 'warning' as const
     },
     {
       title: 'Cea mai mică cheltuială',
-      value: 'Divertisment - 180 RON',
-      change: '-5% față de luna trecută',
-      type: 'success'
+      value: reportData.categoryData[reportData.categoryData.length - 1] ? 
+        `${reportData.categoryData[reportData.categoryData.length - 1].name} - ${reportData.categoryData[reportData.categoryData.length - 1].amount.toLocaleString()} RON` : 'N/A',
+      change: '-5% față de perioada anterioară',
+      type: 'success' as const
     },
     {
       title: 'Trend general',
-      value: 'Cheltuieli în scădere',
-      change: '-8% față de luna trecută',
-      type: 'success'
+      value: reportData.netAmount >= 0 ? 'Surplus financiar' : 'Deficit financiar',
+      change: `${reportData.netAmount >= 0 ? '+' : ''}${reportData.netAmount.toLocaleString()} RON`,
+      type: reportData.netAmount >= 0 ? 'success' as const : 'warning' as const
     },
     {
-      title: 'Obiectiv lunar',
-      value: 'Atins 85%',
-      change: 'Rămân 450 RON',
-      type: 'info'
+      title: 'Rata de economisire',
+      value: `${Math.round(reportData.savingsRate)}%`,
+      change: `${reportData.savingsRate >= 20 ? 'Excelent' : reportData.savingsRate >= 10 ? 'Bun' : 'Poate fi îmbunătățit'}`,
+      type: reportData.savingsRate >= 20 ? 'success' as const : 'info' as const
     }
   ];
+
+  const exportReport = () => {
+    const csvContent = [
+      ['Categorie', 'Suma (RON)', 'Procent', 'Numar tranzactii'],
+      ...reportData.categoryData.map(cat => [
+        cat.name,
+        cat.amount.toString(),
+        cat.percentage.toString() + '%',
+        cat.transactionCount.toString()
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `raport-cheltuieli-${selectedPeriod}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-6">
@@ -58,7 +159,10 @@ const Reports: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Rapoarte și Analize</h1>
           <p className="text-gray-600 mt-1">Obține perspective detaliate asupra cheltuielilor tale</p>
         </div>
-        <button className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center">
+        <button 
+          onClick={exportReport}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center"
+        >
           <Download size={20} className="mr-2" />
           Exportă Raport
         </button>
@@ -89,11 +193,11 @@ const Reports: React.FC = () => {
               className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             >
               <option value="all">Toate categoriile</option>
-              <option value="food">Mâncare</option>
-              <option value="transport">Transport</option>
-              <option value="entertainment">Divertisment</option>
-              <option value="shopping">Cumpărături</option>
-              <option value="utilities">Utilități</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>
+                  {category.icon} {category.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -127,13 +231,13 @@ const Reports: React.FC = () => {
           </div>
           
           <div className="space-y-4">
-            {chartData.monthly.map((data, index) => (
+            {reportData.monthlyData.map((data, index) => (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">{data.month}</span>
                   <div className="text-sm text-gray-600">
-                    <span className="text-green-600">+{data.income}</span> / 
-                    <span className="text-red-600 ml-1">-{data.expenses}</span>
+                    <span className="text-green-600">+{data.income.toLocaleString()}</span> / 
+                    <span className="text-red-600 ml-1">-{data.expenses.toLocaleString()}</span>
                   </div>
                 </div>
                 
@@ -142,13 +246,13 @@ const Reports: React.FC = () => {
                     <div className="relative h-3 rounded-full overflow-hidden">
                       <div 
                         className="bg-green-500 h-full"
-                        style={{ width: `${(data.income / 5000) * 100}%` }}
+                        style={{ width: `${Math.min((data.income / Math.max(data.income, data.expenses, 1)) * 100, 100)}%` }}
                       />
                       <div 
                         className="bg-red-500 h-full absolute top-0"
                         style={{ 
-                          width: `${(data.expenses / 5000) * 100}%`,
-                          left: `${(data.income / 5000) * 100}%`
+                          width: `${Math.min((data.expenses / Math.max(data.income, data.expenses, 1)) * 100, 100)}%`,
+                          left: `${Math.min((data.income / Math.max(data.income, data.expenses, 1)) * 100, 100)}%`
                         }}
                       />
                     </div>
@@ -167,7 +271,7 @@ const Reports: React.FC = () => {
           </div>
           
           <div className="space-y-4">
-            {chartData.categories.map((category, index) => (
+            {reportData.categoryData.slice(0, 8).map((category, index) => (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
@@ -178,7 +282,7 @@ const Reports: React.FC = () => {
                     <span className="text-sm font-medium text-gray-700">{category.name}</span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    {category.amount} RON ({category.percentage}%)
+                    {category.amount.toLocaleString()} RON ({category.percentage}%)
                   </div>
                 </div>
                 
@@ -204,30 +308,30 @@ const Reports: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="text-center p-4 bg-green-50 rounded-xl">
             <TrendingUp size={32} className="text-green-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Cea mai bună lună</p>
-            <p className="text-lg font-bold text-green-600">Februarie</p>
-            <p className="text-sm text-gray-500">+1,200 RON economisit</p>
+            <p className="text-sm text-gray-600">Total venituri</p>
+            <p className="text-lg font-bold text-green-600">{reportData.totalIncome.toLocaleString()} RON</p>
+            <p className="text-sm text-gray-500">în perioada selectată</p>
           </div>
           
-          <div className="text-center p-4 bg-blue-50 rounded-xl">
-            <BarChart3 size={32} className="text-blue-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Medie zilnică</p>
-            <p className="text-lg font-bold text-blue-600">106 RON</p>
-            <p className="text-sm text-gray-500">cheltuieli</p>
+          <div className="text-center p-4 bg-red-50 rounded-xl">
+            <BarChart3 size={32} className="text-red-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">Total cheltuieli</p>
+            <p className="text-lg font-bold text-red-600">{reportData.totalExpenses.toLocaleString()} RON</p>
+            <p className="text-sm text-gray-500">în perioada selectată</p>
           </div>
           
           <div className="text-center p-4 bg-purple-50 rounded-xl">
             <PieChart size={32} className="text-purple-600 mx-auto mb-2" />
             <p className="text-sm text-gray-600">Tranzacții</p>
-            <p className="text-lg font-bold text-purple-600">247</p>
-            <p className="text-sm text-gray-500">în ultimele 30 zile</p>
+            <p className="text-lg font-bold text-purple-600">{reportData.transactionCount}</p>
+            <p className="text-sm text-gray-500">în perioada selectată</p>
           </div>
           
-          <div className="text-center p-4 bg-yellow-50 rounded-xl">
-            <TrendingUp size={32} className="text-yellow-600 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Rata de economisire</p>
-            <p className="text-lg font-bold text-yellow-600">28%</p>
-            <p className="text-sm text-gray-500">din venituri</p>
+          <div className="text-center p-4 bg-blue-50 rounded-xl">
+            <TrendingUp size={32} className="text-blue-600 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">Medie zilnică</p>
+            <p className="text-lg font-bold text-blue-600">{Math.round(reportData.avgDailyExpense).toLocaleString()} RON</p>
+            <p className="text-sm text-gray-500">cheltuieli</p>
           </div>
         </div>
       </Card>

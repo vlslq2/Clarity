@@ -1,73 +1,22 @@
 import React, { useState } from 'react';
-import { Plus, Play, Pause, Settings, Calendar, CreditCard } from 'lucide-react';
+import { Plus, Play, Pause, Edit2, Trash2, Calendar, CreditCard } from 'lucide-react';
 import Card from '../components/Card';
+import { useRecurringPayments } from '../hooks/useRecurringPayments';
+import { useCategories } from '../hooks/useCategories';
+import { useAccounts } from '../hooks/useAccounts';
+import RecurringPaymentModal from '../components/RecurringPaymentModal';
 
 const RecurringPayments: React.FC = () => {
-  const [recurringPayments, setRecurringPayments] = useState([
-    {
-      id: '1',
-      name: 'Netflix',
-      amount: -29.99,
-      category: 'Divertisment',
-      frequency: 'monthly',
-      nextPayment: '2025-02-15',
-      active: true,
-      icon: '🎬'
-    },
-    {
-      id: '2',
-      name: 'Spotify',
-      amount: -19.99,
-      category: 'Divertisment',
-      frequency: 'monthly',
-      nextPayment: '2025-02-12',
-      active: true,
-      icon: '🎵'
-    },
-    {
-      id: '3',
-      name: 'Digi Internet',
-      amount: -49.99,
-      category: 'Utilități',
-      frequency: 'monthly',
-      nextPayment: '2025-02-05',
-      active: true,
-      icon: '📡'
-    },
-    {
-      id: '4',
-      name: 'Fitness Gym',
-      amount: -120.00,
-      category: 'Sănătate',
-      frequency: 'monthly',
-      nextPayment: '2025-02-20',
-      active: false,
-      icon: '💪'
-    },
-    {
-      id: '5',
-      name: 'Salariu',
-      amount: 4500,
-      category: 'Venit',
-      frequency: 'monthly',
-      nextPayment: '2025-02-28',
-      active: true,
-      icon: '💰'
-    },
-    {
-      id: '6',
-      name: 'Asigurare Auto',
-      amount: -180,
-      category: 'Transport',
-      frequency: 'monthly',
-      nextPayment: '2025-02-10',
-      active: true,
-      icon: '🚗'
-    }
-  ]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingPayment, setEditingPayment] = useState<any>(null);
+
+  const { recurringPayments, loading, addRecurringPayment, updateRecurringPayment, deleteRecurringPayment, togglePaymentStatus } = useRecurringPayments();
+  const { categories } = useCategories();
+  const { accounts } = useAccounts();
 
   const getFrequencyLabel = (frequency: string) => {
     switch (frequency) {
+      case 'daily': return 'Zilnic';
       case 'weekly': return 'Săptămânal';
       case 'monthly': return 'Lunar';
       case 'yearly': return 'Anual';
@@ -75,19 +24,41 @@ const RecurringPayments: React.FC = () => {
     }
   };
 
-  const togglePayment = (id: string) => {
-    setRecurringPayments(payments =>
-      payments.map(payment =>
-        payment.id === id ? { ...payment, active: !payment.active } : payment
-      )
-    );
+  const handleAddPayment = () => {
+    setEditingPayment(null);
+    setShowModal(true);
   };
 
-  const activePayments = recurringPayments.filter(p => p.active);
-  const inactivePayments = recurringPayments.filter(p => !p.active);
+  const handleEditPayment = (payment: any) => {
+    setEditingPayment(payment);
+    setShowModal(true);
+  };
+
+  const handleDeletePayment = async (id: string) => {
+    if (window.confirm('Ești sigur că vrei să ștergi această plată recurentă?')) {
+      await deleteRecurringPayment(id);
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    await togglePaymentStatus(id, !currentStatus);
+  };
+
+  const activePayments = recurringPayments.filter(p => p.is_active);
+  const inactivePayments = recurringPayments.filter(p => !p.is_active);
   
   const monthlyIncome = activePayments.filter(p => p.amount > 0).reduce((sum, p) => sum + p.amount, 0);
   const monthlyExpenses = activePayments.filter(p => p.amount < 0).reduce((sum, p) => sum + Math.abs(p.amount), 0);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -96,7 +67,10 @@ const RecurringPayments: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Plăți Recurente</h1>
           <p className="text-gray-600 mt-1">Gestionează abonamentele și plățile recurente</p>
         </div>
-        <button className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center">
+        <button 
+          onClick={handleAddPayment}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center"
+        >
           <Plus size={20} className="mr-2" />
           Adaugă Plată
         </button>
@@ -133,52 +107,77 @@ const RecurringPayments: React.FC = () => {
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Plăți Active</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {activePayments.map((payment) => (
-            <Card key={payment.id} hover>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center flex-1">
-                  <div className="text-2xl mr-4">{payment.icon}</div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{payment.name}</h3>
-                    <p className="text-sm text-gray-600">{payment.category}</p>
-                    <div className="flex items-center mt-2 space-x-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar size={14} className="mr-1" />
-                        {getFrequencyLabel(payment.frequency)}
-                      </div>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <CreditCard size={14} className="mr-1" />
-                        {payment.nextPayment}
+          {activePayments.length > 0 ? (
+            activePayments.map((payment) => (
+              <Card key={payment.id} hover>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center flex-1">
+                    <div className="text-2xl mr-4">{payment.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">{payment.name}</h3>
+                      <p className="text-sm text-gray-600">{payment.category?.name}</p>
+                      <div className="flex items-center mt-2 space-x-4">
+                        <div className="flex items-center text-sm text-gray-500">
+                          <Calendar size={14} className="mr-1" />
+                          {getFrequencyLabel(payment.frequency)}
+                        </div>
+                        <div className="flex items-center text-sm text-gray-500">
+                          <CreditCard size={14} className="mr-1" />
+                          {payment.next_payment_date}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="flex items-center space-x-3">
-                  <div className="text-right">
-                    <p className={`text-lg font-semibold ${
-                      payment.amount > 0 ? 'text-green-600' : 'text-gray-900'
-                    }`}>
-                      {payment.amount > 0 ? '+' : ''}{payment.amount} RON
-                    </p>
-                  </div>
                   
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => togglePayment(payment.id)}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      title="Pauză"
-                    >
-                      <Pause size={16} />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:bg-gray-50 rounded-lg transition-colors">
-                      <Settings size={16} />
-                    </button>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right">
+                      <p className={`text-lg font-semibold ${
+                        payment.amount > 0 ? 'text-green-600' : 'text-gray-900'
+                      }`}>
+                        {payment.amount > 0 ? '+' : ''}{payment.amount} RON
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleToggleStatus(payment.id, payment.is_active)}
+                        className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                        title="Pauză"
+                      >
+                        <Pause size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleEditPayment(payment)}
+                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Editează"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePayment(payment.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Șterge"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <CreditCard size={48} className="mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500 text-lg">Nu ai plăți recurente active</p>
+              <p className="text-sm text-gray-400 mt-1">Adaugă prima ta plată recurentă pentru a automatiza bugetul</p>
+              <button 
+                onClick={handleAddPayment}
+                className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+              >
+                Adaugă prima plată
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -194,7 +193,7 @@ const RecurringPayments: React.FC = () => {
                     <div className="text-2xl mr-4 grayscale">{payment.icon}</div>
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900">{payment.name}</h3>
-                      <p className="text-sm text-gray-600">{payment.category}</p>
+                      <p className="text-sm text-gray-600">{payment.category?.name}</p>
                       <div className="flex items-center mt-2 space-x-4">
                         <div className="flex items-center text-sm text-gray-500">
                           <Calendar size={14} className="mr-1" />
@@ -214,14 +213,25 @@ const RecurringPayments: React.FC = () => {
                     
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => togglePayment(payment.id)}
-                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        onClick={() => handleToggleStatus(payment.id, payment.is_active)}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="Activează"
                       >
                         <Play size={16} />
                       </button>
-                      <button className="p-2 text-gray-400 hover:bg-gray-50 rounded-lg transition-colors">
-                        <Settings size={16} />
+                      <button
+                        onClick={() => handleEditPayment(payment)}
+                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Editează"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDeletePayment(payment.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Șterge"
+                      >
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -230,6 +240,24 @@ const RecurringPayments: React.FC = () => {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Recurring Payment Modal */}
+      {showModal && (
+        <RecurringPaymentModal
+          payment={editingPayment}
+          categories={categories}
+          accounts={accounts}
+          onSave={async (paymentData) => {
+            if (editingPayment) {
+              await updateRecurringPayment(editingPayment.id, paymentData);
+            } else {
+              await addRecurringPayment(paymentData);
+            }
+            setShowModal(false);
+          }}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </div>
   );

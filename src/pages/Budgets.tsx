@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Target, TrendingUp, TrendingDown, Calendar, Edit2 } from 'lucide-react';
+import { Plus, Target, TrendingUp, TrendingDown, Calendar, Edit2, Trash2 } from 'lucide-react';
 import Card from '../components/Card';
 import { useBudgets } from '../hooks/useBudgets';
 import { useCategories } from '../hooks/useCategories';
@@ -170,9 +170,15 @@ const Budgets: React.FC = () => {
                   </div>
                   <button 
                     onClick={() => handleEditBudget(budget)}
-                    className="p-1 text-gray-400 hover:text-gray-600"
+                    className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
                   >
                     <Edit2 size={14} />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteBudget(budget.id)}
+                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                  >
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>
