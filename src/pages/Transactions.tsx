@@ -53,42 +53,44 @@ const Transactions: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tranzacții</h1>
-          <p className="text-gray-600 mt-1">Gestionează toate tranzacțiile tale</p>
+      <div className="px-1">
+        <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Tranzacții</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">Gestionează toate tranzacțiile</p>
+          </div>
+          <button 
+            onClick={handleAddTransaction}
+            className="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center text-sm"
+          >
+            <Plus size={18} className="mr-2" />
+            Adaugă
+          </button>
         </div>
-        <button 
-          onClick={handleAddTransaction}
-          className="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center"
-        >
-          <Plus size={20} className="mr-2" />
-          Adaugă tranzacție
-        </button>
       </div>
 
       {/* Search and Filter */}
-      <Card className="p-4">
-        <div className="space-y-4">
+      <Card className="mx-1 p-3">
+        <div className="space-y-3">
           <div className="relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Caută tranzacții..."
+              placeholder="Caută..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+              className="w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-sm"
             />
           </div>
           
           <div className="flex items-center space-x-2">
-            <Filter size={20} className="text-gray-400" />
+            <Filter size={18} className="text-gray-400 flex-shrink-0" />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="flex-1 px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+              className="flex-1 min-w-0 px-3 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white text-sm"
             >
               <option value="toate">Toate categoriile</option>
               {categories.map(category => (
@@ -102,107 +104,113 @@ const Transactions: React.FC = () => {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-6 text-center">
-          <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-xl mx-auto mb-3">
-            <ArrowDownLeft size={24} className="text-red-600" />
+      <div className="grid grid-cols-3 gap-2 px-1">
+        <Card className="p-3 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg mx-auto mb-2">
+            <ArrowDownLeft size={16} className="text-red-600" />
           </div>
-          <p className="text-sm font-medium text-gray-600 mb-1">Cheltuieli</p>
-          <p className="text-2xl font-bold text-red-600">
-            {totalExpenses.toLocaleString('ro-RO')} RON
+          <p className="text-xs font-medium text-gray-600 mb-1">Cheltuieli</p>
+          <p className="text-sm font-bold text-red-600 leading-tight">
+            {totalExpenses.toLocaleString('ro-RO', { maximumFractionDigits: 0 })}
           </p>
+          <p className="text-xs text-gray-500">RON</p>
         </Card>
         
-        <Card className="p-6 text-center">
-          <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-xl mx-auto mb-3">
-            <ArrowUpRight size={24} className="text-green-600" />
+        <Card className="p-3 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-lg mx-auto mb-2">
+            <ArrowUpRight size={16} className="text-green-600" />
           </div>
-          <p className="text-sm font-medium text-gray-600 mb-1">Venituri</p>
-          <p className="text-2xl font-bold text-green-600">
-            {totalIncome.toLocaleString('ro-RO')} RON
+          <p className="text-xs font-medium text-gray-600 mb-1">Venituri</p>
+          <p className="text-sm font-bold text-green-600 leading-tight">
+            {totalIncome.toLocaleString('ro-RO', { maximumFractionDigits: 0 })}
           </p>
+          <p className="text-xs text-gray-500">RON</p>
         </Card>
         
-        <Card className="p-6 text-center">
-          <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-xl mx-auto mb-3">
-            <div className="w-6 h-6 bg-indigo-600 rounded-full"></div>
+        <Card className="p-3 text-center">
+          <div className="flex items-center justify-center w-8 h-8 bg-indigo-100 rounded-lg mx-auto mb-2">
+            <div className="w-4 h-4 bg-indigo-600 rounded-full"></div>
           </div>
-          <p className="text-sm font-medium text-gray-600 mb-1">Sold net</p>
-          <p className="text-2xl font-bold text-indigo-600">
-            {(totalIncome - totalExpenses).toLocaleString('ro-RO')} RON
+          <p className="text-xs font-medium text-gray-600 mb-1">Sold net</p>
+          <p className="text-sm font-bold text-indigo-600 leading-tight">
+            {(totalIncome - totalExpenses).toLocaleString('ro-RO', { maximumFractionDigits: 0 })}
           </p>
+          <p className="text-xs text-gray-500">RON</p>
         </Card>
       </div>
 
       {/* Transactions List */}
-      <Card className="overflow-hidden">
+      <Card className="mx-1 overflow-hidden">
         <div className="divide-y divide-gray-100">
           {filteredTransactions.length > 0 ? (
             filteredTransactions.map((transaction) => (
               <div 
                 key={transaction.id} 
-                className="p-4 hover:bg-gray-50 transition-colors group"
+                className="p-3 hover:bg-gray-50 transition-colors group"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 flex-1 min-w-0">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      transaction.type === 'income' ? 'bg-green-100' : 'bg-gray-100'
-                    }`}>
-                      <span className="text-xl">
-                        {transaction.category?.icon || '📦'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate">
-                        {transaction.description}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-sm text-gray-600">{transaction.transaction_date}</span>
-                        <span className="text-sm px-2 py-1 bg-gray-100 rounded-md text-gray-700">
-                          {transaction.category?.name || 'Necategorizat'}
-                        </span>
-                      </div>
-                    </div>
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    transaction.type === 'income' ? 'bg-green-100' : 'bg-gray-100'
+                  }`}>
+                    <span className="text-lg">
+                      {transaction.category?.icon || '📦'}
+                    </span>
                   </div>
                   
-                  <div className="flex items-center space-x-3">
-                    <div className="text-right">
-                      <p className={`text-lg font-semibold ${
-                        transaction.amount > 0 ? 'text-green-600' : 'text-gray-900'
-                      }`}>
-                        {transaction.amount > 0 ? '+' : ''}{transaction.amount.toLocaleString('ro-RO')} RON
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => handleEditTransaction(transaction)}
-                        className="w-8 h-8 flex items-center justify-center text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteTransaction(transaction.id)}
-                        className="w-8 h-8 flex items-center justify-center text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0 flex-1 mr-2">
+                        <p className="font-medium text-gray-900 text-sm truncate">
+                          {transaction.description}
+                        </p>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <span className="text-xs text-gray-600">{transaction.transaction_date}</span>
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 rounded text-gray-700 truncate max-w-20">
+                            {transaction.category?.name || 'Necategorizat'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2 flex-shrink-0">
+                        <div className="text-right">
+                          <p className={`text-sm font-semibold ${
+                            transaction.amount > 0 ? 'text-green-600' : 'text-gray-900'
+                          }`}>
+                            {transaction.amount > 0 ? '+' : ''}{Math.abs(transaction.amount).toLocaleString('ro-RO', { maximumFractionDigits: 0 })}
+                          </p>
+                          <p className="text-xs text-gray-500">RON</p>
+                        </div>
+                        
+                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleEditTransaction(transaction)}
+                            className="w-7 h-7 flex items-center justify-center text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTransaction(transaction.id)}
+                            className="w-7 h-7 flex items-center justify-center text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search size={32} className="text-gray-400" />
+            <div className="text-center py-8 px-4">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Search size={24} className="text-gray-400" />
               </div>
-              <p className="text-gray-500 text-lg">Nu ai încă tranzacții</p>
-              <p className="text-sm text-gray-400 mt-1">Adaugă prima ta tranzacție pentru a începe</p>
+              <p className="text-gray-500 text-sm">Nu ai încă tranzacții</p>
+              <p className="text-xs text-gray-400 mt-1">Adaugă prima ta tranzacție</p>
               <button 
                 onClick={handleAddTransaction}
-                className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+                className="mt-3 bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors text-sm"
               >
                 Adaugă prima tranzacție
               </button>
