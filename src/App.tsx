@@ -7,10 +7,7 @@ import Budgets from './pages/Budgets';
 import Categories from './pages/Categories';
 import Calendar from './pages/Calendar';
 import RecurringPayments from './pages/RecurringPayments';
-import Upload from './pages/Upload';
 import Reports from './pages/Reports';
-import Profile from './pages/Profile';
-import Settings from './pages/Settings';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -29,14 +26,8 @@ function App() {
         return <Calendar />;
       case 'recurring':
         return <RecurringPayments />;
-      case 'upload':
-        return <Upload />;
       case 'reports':
         return <Reports />;
-      case 'profile':
-        return <Profile />;
-      case 'settings':
-        return <Settings />;
       default:
         return <Dashboard />;
     }

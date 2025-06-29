@@ -4,9 +4,6 @@ import {
   CreditCard, 
   PieChart, 
   Calendar, 
-  Upload, 
-  Settings, 
-  User,
   Menu,
   X,
   Repeat,
@@ -34,10 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
     { id: 'categories', label: 'Categorii', icon: Tag },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'recurring', label: 'Recurring', icon: Repeat },
-    { id: 'upload', label: 'Încărcare', icon: Upload },
     { id: 'reports', label: 'Rapoarte', icon: BarChart3 },
-    { id: 'profile', label: 'Profil', icon: User },
-    { id: 'settings', label: 'Setări', icon: Settings },
   ];
 
   const handleSignOut = async () => {
@@ -45,48 +39,44 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-      {/* Enhanced Mobile Header */}
-      <div className="lg:hidden bg-white/95 backdrop-blur-xl border-b-2 border-gray-200/80 px-4 py-3 flex items-center justify-between sticky top-0 z-40 safe-area-inset-top shadow-lg">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile Header */}
+      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40 safe-area-inset-top">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
             <Sparkles size={16} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gradient">
-            Clarity
-          </h1>
+          <h1 className="text-xl font-bold text-gray-900">Clarity</h1>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="touch-target rounded-xl text-gray-600 hover:text-gray-900 hover:bg-white/90 transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg border-2 border-gray-200/60 hover:border-gray-300/80"
+          className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center transition-colors active:bg-gray-200"
         >
-          {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       <div className="flex">
-        {/* Enhanced Sidebar with better contrast */}
+        {/* Sidebar */}
         <div className={`
-          fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r-2 border-gray-200/80 transform shadow-2xl
+          fixed inset-y-0 left-0 z-50 w-80 bg-white border-r border-gray-200 transform
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:static lg:inset-0 transition-transform duration-300 ease-out
           safe-area-inset-left
         `}>
           <div className="flex flex-col h-full">
-            {/* Enhanced Logo with better contrast */}
-            <div className="flex items-center justify-center h-20 px-6 border-b-2 border-gray-200/80 safe-area-inset-top bg-gradient-to-r from-white to-gray-50/50">
+            {/* Logo */}
+            <div className="flex items-center justify-center h-20 px-6 border-b border-gray-200 safe-area-inset-top">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/25 border border-indigo-500/20">
+                <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
                   <Sparkles size={20} className="text-white" />
                 </div>
-                <h1 className="text-3xl font-bold text-gradient">
-                  Clarity
-                </h1>
+                <h1 className="text-2xl font-bold text-gray-900">Clarity</h1>
               </div>
             </div>
             
-            {/* Enhanced Navigation with better contrast */}
-            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            {/* Navigation */}
+            <nav className="flex-1 px-6 py-6 space-y-2 overflow-y-auto">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentPage === item.id;
@@ -98,29 +88,24 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
                       setSidebarOpen(false);
                     }}
                     className={`
-                      w-full flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200 group border-2 touch-target
+                      w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200
                       ${isActive
-                        ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-[1.02] border-indigo-500/30'
-                        : 'text-gray-700 hover:text-gray-900 hover:bg-white/80 hover:shadow-md active:scale-[0.98] border-transparent hover:border-gray-200/60'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
                       }
                     `}
                   >
-                    <Icon size={20} className={`mr-3 flex-shrink-0 transition-transform duration-200 ${
-                      isActive ? 'scale-110' : 'group-hover:scale-110'
-                    }`} />
-                    <span className="truncate">{item.label}</span>
-                    {isActive && (
-                      <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse shadow-sm"></div>
-                    )}
+                    <Icon size={20} className="mr-3" />
+                    <span>{item.label}</span>
                   </button>
                 );
               })}
             </nav>
 
-            {/* Enhanced User Info & Sign Out with better contrast */}
-            <div className="p-4 border-t-2 border-gray-200/80 safe-area-inset-bottom bg-gradient-to-r from-white to-gray-50/50">
-              <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl bg-gradient-to-r from-white to-indigo-50/60 backdrop-blur-sm border-2 border-gray-200/60 shadow-md">
-                <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg border border-indigo-500/20">
+            {/* User Info & Sign Out */}
+            <div className="p-6 border-t border-gray-200 safe-area-inset-bottom">
+              <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl bg-gray-50">
+                <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
                   <span className="text-sm font-semibold text-white">
                     {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                   </span>
@@ -134,9 +119,9 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
               </div>
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-white/80 rounded-xl transition-all duration-200 active:scale-[0.98] hover:shadow-md group border-2 border-transparent hover:border-gray-200/60 touch-target"
+                className="w-full flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
               >
-                <LogOut size={16} className="mr-3 group-hover:scale-110 transition-transform duration-200" />
+                <LogOut size={16} className="mr-3" />
                 Deconectează-te
               </button>
             </div>
@@ -151,10 +136,10 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
         </div>
       </div>
 
-      {/* Enhanced Mobile Sidebar Overlay with better contrast */}
+      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
