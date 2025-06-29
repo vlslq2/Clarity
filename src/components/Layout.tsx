@@ -12,7 +12,8 @@ import {
   Repeat,
   LogOut,
   Tag,
-  Sparkles
+  Sparkles,
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
@@ -34,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
     { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'recurring', label: 'Recurring', icon: Repeat },
     { id: 'upload', label: 'Încărcare', icon: Upload },
-    { id: 'reports', label: 'Rapoarte', icon: PieChart },
+    { id: 'reports', label: 'Rapoarte', icon: BarChart3 },
     { id: 'profile', label: 'Profil', icon: User },
     { id: 'settings', label: 'Setări', icon: Settings },
   ];
@@ -46,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Enhanced Mobile Header */}
-      <div className="lg:hidden bg-white/95 backdrop-blur-xl border-b-2 border-gray-200/80 px-4 py-3 flex items-center justify-between sticky top-0 z-40 safe-area-inset-top shadow-lg shadow-gray-900/10">
+      <div className="lg:hidden bg-white/95 backdrop-blur-xl border-b-2 border-gray-200/80 px-4 py-3 flex items-center justify-between sticky top-0 z-40 safe-area-inset-top shadow-lg">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
             <Sparkles size={16} className="text-white" />
@@ -66,7 +67,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
       <div className="flex">
         {/* Enhanced Sidebar with better contrast */}
         <div className={`
-          fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r-2 border-gray-200/80 transform shadow-2xl shadow-gray-900/20
+          fixed inset-y-0 left-0 z-50 w-72 bg-white/95 backdrop-blur-xl border-r-2 border-gray-200/80 transform shadow-2xl
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0 lg:static lg:inset-0 transition-transform duration-300 ease-out
           safe-area-inset-left
@@ -118,7 +119,7 @@ const Layout: React.FC<LayoutProps> = ({ children, currentPage, onPageChange }) 
 
             {/* Enhanced User Info & Sign Out with better contrast */}
             <div className="p-4 border-t-2 border-gray-200/80 safe-area-inset-bottom bg-gradient-to-r from-white to-gray-50/50">
-              <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl bg-gradient-to-r from-white to-indigo-50/60 backdrop-blur-sm border-2 border-gray-200/60 shadow-md shadow-gray-900/10">
+              <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl bg-gradient-to-r from-white to-indigo-50/60 backdrop-blur-sm border-2 border-gray-200/60 shadow-md">
                 <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg border border-indigo-500/20">
                   <span className="text-sm font-semibold text-white">
                     {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}

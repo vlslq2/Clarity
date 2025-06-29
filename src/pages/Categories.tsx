@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, TrendingUp, TrendingDown, Settings, Edit2, Trash2 } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Edit2, Trash2 } from 'lucide-react';
 import Card from '../components/Card';
 import { useCategories } from '../hooks/useCategories';
 import { useTransactions } from '../hooks/useTransactions';
